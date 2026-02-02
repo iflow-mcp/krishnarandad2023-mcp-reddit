@@ -1,6 +1,6 @@
 [project]
 name = "iflow-mcp_krishnarandad2023-mcp-reddit"
-version = "0.1.0"
+version = "0.1.1"
 description = "A comprehensive Model Context Protocol (MCP) server for Reddit integration"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -13,6 +13,9 @@ dependencies = [
 
 [project.scripts]
 reddit-mcp = "src.server:main_sync"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 
 [build-system]
 requires = ["hatchling"]
