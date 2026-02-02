@@ -1,0 +1,19 @@
+[project]
+name = "iflow-mcp_krishnarandad2023-mcp-reddit"
+version = "0.1.0"
+description = "A comprehensive Model Context Protocol (MCP) server for Reddit integration"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "praw>=7.7.1",
+    "mcp>=1.0.0",
+    "pydantic>=2.0.0",
+    "asyncio-mqtt>=0.16.0",
+]
+
+[project.scripts]
+reddit-mcp = "src.server:main_sync"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -13,13 +13,8 @@ import os
 import sys
 from typing import Any
 
-try:
-    import praw
-    import prawcore
-    PRAW_AVAILABLE = True
-except ImportError:
-    PRAW_AVAILABLE = False
-
+import praw
+import prawcore
 from mcp import types
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
@@ -42,18 +37,14 @@ def initialize_reddit():
     """Initialize Reddit client with proper error handling for different app types"""
     global reddit
     
-    if not PRAW_AVAILABLE:
-        logger.warning("PRAW library not available. Running in mock mode.")
-        return
-    
     try:
         # First try script app authentication (password auth)
         reddit = praw.Reddit(
-            client_id=os.getenv("REDDIT_CLIENT_ID", "mock_client_id"),
-            client_secret=os.getenv("REDDIT_CLIENT_SECRET", "mock_secret"),
+            client_id=os.getenv("REDDIT_CLIENT_ID"),
+            client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
             user_agent=os.getenv("REDDIT_USER_AGENT", "mcp-reddit-agent/0.1"),
-            username=os.getenv("REDDIT_USERNAME", "mock_username"),
-            password=os.getenv("REDDIT_PASSWORD", "mock_password"),
+            username=os.getenv("REDDIT_USERNAME"),
+            password=os.getenv("REDDIT_PASSWORD"),
         )
         
         # Test the connection
@@ -69,21 +60,21 @@ def initialize_reddit():
             try:
                 # Fall back to read-only mode for non-script apps
                 reddit = praw.Reddit(
-                    client_id=os.getenv("REDDIT_CLIENT_ID", "mock_client_id"),
-                    client_secret=os.getenv("REDDIT_CLIENT_SECRET", "mock_secret"),
+                    client_id=os.getenv("REDDIT_CLIENT_ID"),
+                    client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
                     user_agent=os.getenv("REDDIT_USER_AGENT", "mcp-reddit-agent/0.1"),
                 )
                 logger.info("Reddit client initialized in read-only mode")
                 logger.warning("Note: Post and comment creation will not work without a script app")
             except Exception as fallback_error:
                 logger.error(f"Failed to initialize Reddit client in read-only mode: {fallback_error}")
-                reddit = None
+                raise
         else:
             logger.error(f"Reddit OAuth error: {oauth_error}")
-            reddit = None
+            raise
     except Exception as e:
         logger.error(f"Failed to initialize Reddit client: {e}")
-        reddit = None
+        raise
 
 # Initialize the MCP server
 app = Server("reddit-mcp")
